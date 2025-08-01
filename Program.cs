@@ -1,12 +1,11 @@
-﻿namespace odd_even
+﻿namespace square_no
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            int n = 36;
-            odd_even oe = new odd_even(n);
-            oe.display(n);
+            sqr s=new sqr();
+            s.sqre(8);
         }
     }
 }
