@@ -1,12 +1,15 @@
-﻿namespace odd_even
+﻿namespace ConsoleApp2
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            int n = 36;
-            odd_even oe = new odd_even(n);
-            oe.display(n);
+            
+           numbers number = new numbers();
+            number.num(6);
+            number.num(0);
+            number.num(-5);
+           
         }
     }
 }
