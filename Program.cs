@@ -1,13 +1,15 @@
-﻿namespace person
+﻿namespace ConsoleApp2
 {
     internal class Program
     {
         static void Main(string[] args)
         {
             
-            person p=new person();
-            p.names();
-            p.display();
+           numbers number = new numbers();
+            number.num(6);
+            number.num(0);
+            number.num(-5);
+           
         }
     }
 }
