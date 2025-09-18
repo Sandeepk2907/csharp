@@ -1,58 +1,44 @@
 ﻿using System;
 
-namespace RestaurantDesserts
+namespace LibraryManagement
 {
-    // Base class for all desserts
-    abstract class Dessert
+    // Base class
+    class Book
     {
-        // Common step
-        public void AddSugar()
+        public string Title { get; set; }
+        public string Author { get; set; }
+
+        public Book(string title, string author)
         {
-            Console.WriteLine("Step 1: Add Sugar");
+            Title = title;
+            Author = author;
         }
 
-        // Abstract method for the unique preparation
-        public abstract void Prepare();
-
-        // Common step
-        public void Serve()
+        public virtual void DisplayInfo()
         {
-            Console.WriteLine("Step 3: Serve to the Customer\n");
-        }
-
-        // Template method that calls all steps in order
-        public void MakeDessert()
-        {
-            AddSugar();
-            Prepare();   // Dessert-specific step
-            Serve();
+            Console.WriteLine($"Title  : {Title}");
+            Console.WriteLine($"Author : {Author}");
         }
     }
 
-    // Ice-cream dessert
-    class IceCream : Dessert
+    // Derived class
+    class EBook : Book
     {
-        public override void Prepare()
-        {
-            Console.WriteLine("Step 2: Churn and Freeze the mixture");
-        }
-    }
+        public double FileSize { get; set; } // in MB
+        public string Format { get; set; }   // e.g., PDF, EPUB, MOBI
 
-    // Cake dessert
-    class Cake : Dessert
-    {
-        public override void Prepare()
+        public EBook(string title, string author, double fileSize, string format)
+            : base(title, author)
         {
-            Console.WriteLine("Step 2: Bake in the oven");
+            FileSize = fileSize;
+            Format = format;
         }
-    }
 
-    // Gulab Jamun dessert
-    class GulabJamun : Dessert
-    {
-        public override void Prepare()
+        public override void DisplayInfo()
         {
-            Console.WriteLine("Step 2: Fry dough balls and soak in syrup");
+            base.DisplayInfo();
+            Console.WriteLine($"File Size : {FileSize} MB");
+            Console.WriteLine($"Format    : {Format}");
         }
     }
 
@@ -60,19 +46,17 @@ namespace RestaurantDesserts
     {
         static void Main(string[] args)
         {
-            // Create objects for each dessert
-            Dessert iceCream = new IceCream();
-            Dessert cake = new Cake();
-            Dessert gulabJamun = new GulabJamun();
+            // Create a normal book
+            Book book1 = new Book("The Alchemist", "Paulo Coelho");
+            Console.WriteLine("=== Printed Book ===");
+            book1.DisplayInfo();
 
-            Console.WriteLine("=== Ice-Cream Preparation ===");
-            iceCream.MakeDessert();
+            Console.WriteLine();
 
-            Console.WriteLine("=== Cake Preparation ===");
-            cake.MakeDessert();
-
-            Console.WriteLine("=== Gulab Jamun Preparation ===");
-            gulabJamun.MakeDessert();
+            // Create an E-Book
+            EBook ebook1 = new EBook("C# Programming Guide", "John Doe", 5.8, "PDF");
+            Console.WriteLine("=== E-Book ===");
+            ebook1.DisplayInfo();
         }
     }
 }
