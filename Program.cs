@@ -1,15 +1,13 @@
-﻿namespace ConsoleApp2
+﻿namespace Vehicle
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            
-           numbers number = new numbers();
-            number.num(6);
-            number.num(0);
-            number.num(-5);
-           
+            Vehicle v = new Vehicle("KTM", "DUKE 360", 69);
+            v.display();
+            Vehicle c = new Car("MAHENDRA", "THAR", 699, 5, "Petrol");
+            c.display();
         }
     }
 }
