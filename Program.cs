@@ -1,101 +1,122 @@
 ﻿using System;
 
-namespace PaymentProcessingSystem
+namespace BankDemo
 {
-    // Base class
-    class Payment
+    // ================= Base Class =================
+    class BankAccount
     {
-        public double Amount { get; set; }
-        public DateTime Date { get; set; }
+        // 1. Public – accessible everywhere
+        public string AccountHolder;
 
-        public Payment(double amount, DateTime date)
+        // 2. Private – accessible only inside BankAccount
+        private double Balance;
+
+        // 3. Protected – accessible in BankAccount and derived classes
+        protected string BankName;
+
+        // 4. Internal – accessible anywhere in the same assembly
+        internal string IFSCCode;
+
+        // 5. Protected Internal – accessible in same assembly
+        //     OR derived classes in other assemblies
+        protected internal string Branch;
+
+        // 6. Private Protected – accessible in derived classes
+        //     but ONLY in the same assembly
+        private protected string AccountType;
+
+        // Constructor
+        public BankAccount(string holder, double balance, string bank,
+                           string ifsc, string branch, string type)
         {
-            Amount = amount;
-            Date = date;
+            AccountHolder = holder;
+            Balance = balance;
+            BankName = bank;
+            IFSCCode = ifsc;
+            Branch = branch;
+            AccountType = type;
         }
 
-        // Virtual method to process payment
-        public virtual void ProcessPayment()
+        // Public method to show details inside the class
+        public void ShowBankAccountDetails()
         {
-            Console.WriteLine($"Processing a payment of ₹{Amount} on {Date:d}");
+            Console.WriteLine("=== Inside BankAccount Class ===");
+            Console.WriteLine($"Public           : Account Holder = {AccountHolder}");
+            Console.WriteLine($"Private          : Balance = {Balance}");
+            Console.WriteLine($"Protected        : Bank Name = {BankName}");
+            Console.WriteLine($"Internal         : IFSC Code = {IFSCCode}");
+            Console.WriteLine($"ProtectedInternal: Branch = {Branch}");
+            Console.WriteLine($"PrivateProtected : Account Type = {AccountType}");
+            Console.WriteLine();
         }
     }
 
-    // Derived class for Credit Card Payment
-    class CreditCardPayment : Payment
+    // ============= Derived Class =============
+    class SavingsAccount : BankAccount
     {
-        public string CardNumber { get; set; }
-        public string CardHolderName { get; set; }
+        public SavingsAccount(string holder, double balance, string bank,
+                              string ifsc, string branch, string type)
+            : base(holder, balance, bank, ifsc, branch, type)
+        { }
 
-        public CreditCardPayment(double amount, DateTime date,
-                                 string cardNumber, string cardHolderName)
-            : base(amount, date)
+        public void ShowAccessibleMembers()
         {
-            CardNumber = cardNumber;
-            CardHolderName = cardHolderName;
-        }
-
-        public override void ProcessPayment()
-        {
-            Console.WriteLine("=== Credit Card Payment ===");
-            Console.WriteLine($"Amount          : ₹{Amount}");
-            Console.WriteLine($"Date            : {Date:d}");
-            Console.WriteLine($"Card Holder     : {CardHolderName}");
-            // Mask all but last 4 digits of card number
-            string masked = new string('X', CardNumber.Length - 4) + CardNumber[^4..];
-            Console.WriteLine($"Card Number     : {masked}");
-            Console.WriteLine("Status          : Payment processed successfully.\n");
+            Console.WriteLine("=== Inside SavingsAccount (Derived Class) ===");
+            Console.WriteLine($"Public           : {AccountHolder}");
+            // Console.WriteLine(Balance); // ❌ Not accessible (private)
+            Console.WriteLine($"Protected        : {BankName}");         // ✅
+            Console.WriteLine($"Internal         : {IFSCCode}");         // ✅ (same assembly)
+            Console.WriteLine($"ProtectedInternal: {Branch}");           // ✅
+            Console.WriteLine($"PrivateProtected : {AccountType}");      // ✅ (derived + same assembly)
+            Console.WriteLine();
         }
     }
 
-    // Derived class for UPI Payment
-    class UpiPayment : Payment
+    // ============= Non-Derived Class in Same Assembly =============
+    class OtherClass
     {
-        public string UpiId { get; set; }
-        public string BankName { get; set; }
-
-        public UpiPayment(double amount, DateTime date,
-                          string upiId, string bankName)
-            : base(amount, date)
+        public void ShowAccessibleMembers(BankAccount acc)
         {
-            UpiId = upiId;
-            BankName = bankName;
-        }
-
-        public override void ProcessPayment()
-        {
-            Console.WriteLine("=== UPI Payment ===");
-            Console.WriteLine($"Amount          : ₹{Amount}");
-            Console.WriteLine($"Date            : {Date:d}");
-            Console.WriteLine($"UPI ID          : {UpiId}");
-            Console.WriteLine($"Bank Name       : {BankName}");
-            Console.WriteLine("Status          : Payment processed successfully.\n");
+            Console.WriteLine("=== Inside OtherClass (Non-Derived, Same Assembly) ===");
+            Console.WriteLine($"Public           : {acc.AccountHolder}");
+            // Console.WriteLine(acc.Balance);      // ❌ Private
+            // Console.WriteLine(acc.BankName);     // ❌ Protected
+            Console.WriteLine($"Internal         : {acc.IFSCCode}");      // ✅ Same assembly
+            Console.WriteLine($"ProtectedInternal: {acc.Branch}");        // ✅ Same assembly
+            // Console.WriteLine(acc.AccountType);  // ❌ Private Protected
+            Console.WriteLine();
         }
     }
 
+    // ================= Main Program =================
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            // Sample Credit Card payment
-            CreditCardPayment cardPay = new CreditCardPayment(
-                2500.75,
-                DateTime.Now,
-                "1234567812345678",
-                "Alice Johnson"
+            BankAccount baseAcc = new BankAccount(
+                holder: "Alice",
+                balance: 50000,
+                bank: "National Bank",
+                ifsc: "NATB0001234",
+                branch: "City Center",
+                type: "Savings"
             );
 
-            // Sample UPI payment
-            UpiPayment upiPay = new UpiPayment(
-                999.50,
-                DateTime.Now,
-                "alice@upi",
-                "State Bank of India"
+            SavingsAccount savings = new SavingsAccount(
+                holder: "Bob",
+                balance: 25000,
+                bank: "National Bank",
+                ifsc: "NATB0005678",
+                branch: "Uptown",
+                type: "Savings"
             );
 
-            // Process both payments
-            cardPay.ProcessPayment();
-            upiPay.ProcessPayment();
+            OtherClass other = new OtherClass();
+
+            // Show details inside each context
+            baseAcc.ShowBankAccountDetails();   // Inside base class
+            savings.ShowAccessibleMembers();    // Inside derived class
+            other.ShowAccessibleMembers(baseAcc); // Inside non-derived same-assembly class
         }
     }
 }
