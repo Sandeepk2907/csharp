@@ -1,44 +1,75 @@
 ﻿using System;
 
-namespace LibraryManagement
+namespace PaymentProcessingSystem
 {
     // Base class
-    class Book
+    class Payment
     {
-        public string Title { get; set; }
-        public string Author { get; set; }
+        public double Amount { get; set; }
+        public DateTime Date { get; set; }
 
-        public Book(string title, string author)
+        public Payment(double amount, DateTime date)
         {
-            Title = title;
-            Author = author;
+            Amount = amount;
+            Date = date;
         }
 
-        public virtual void DisplayInfo()
+        // Virtual method to process payment
+        public virtual void ProcessPayment()
         {
-            Console.WriteLine($"Title  : {Title}");
-            Console.WriteLine($"Author : {Author}");
+            Console.WriteLine($"Processing a payment of ₹{Amount} on {Date:d}");
         }
     }
 
-    // Derived class
-    class EBook : Book
+    // Derived class for Credit Card Payment
+    class CreditCardPayment : Payment
     {
-        public double FileSize { get; set; } // in MB
-        public string Format { get; set; }   // e.g., PDF, EPUB, MOBI
+        public string CardNumber { get; set; }
+        public string CardHolderName { get; set; }
 
-        public EBook(string title, string author, double fileSize, string format)
-            : base(title, author)
+        public CreditCardPayment(double amount, DateTime date,
+                                 string cardNumber, string cardHolderName)
+            : base(amount, date)
         {
-            FileSize = fileSize;
-            Format = format;
+            CardNumber = cardNumber;
+            CardHolderName = cardHolderName;
         }
 
-        public override void DisplayInfo()
+        public override void ProcessPayment()
         {
-            base.DisplayInfo();
-            Console.WriteLine($"File Size : {FileSize} MB");
-            Console.WriteLine($"Format    : {Format}");
+            Console.WriteLine("=== Credit Card Payment ===");
+            Console.WriteLine($"Amount          : ₹{Amount}");
+            Console.WriteLine($"Date            : {Date:d}");
+            Console.WriteLine($"Card Holder     : {CardHolderName}");
+            // Mask all but last 4 digits of card number
+            string masked = new string('X', CardNumber.Length - 4) + CardNumber[^4..];
+            Console.WriteLine($"Card Number     : {masked}");
+            Console.WriteLine("Status          : Payment processed successfully.\n");
+        }
+    }
+
+    // Derived class for UPI Payment
+    class UpiPayment : Payment
+    {
+        public string UpiId { get; set; }
+        public string BankName { get; set; }
+
+        public UpiPayment(double amount, DateTime date,
+                          string upiId, string bankName)
+            : base(amount, date)
+        {
+            UpiId = upiId;
+            BankName = bankName;
+        }
+
+        public override void ProcessPayment()
+        {
+            Console.WriteLine("=== UPI Payment ===");
+            Console.WriteLine($"Amount          : ₹{Amount}");
+            Console.WriteLine($"Date            : {Date:d}");
+            Console.WriteLine($"UPI ID          : {UpiId}");
+            Console.WriteLine($"Bank Name       : {BankName}");
+            Console.WriteLine("Status          : Payment processed successfully.\n");
         }
     }
 
@@ -46,17 +77,25 @@ namespace LibraryManagement
     {
         static void Main(string[] args)
         {
-            // Create a normal book
-            Book book1 = new Book("The Alchemist", "Paulo Coelho");
-            Console.WriteLine("=== Printed Book ===");
-            book1.DisplayInfo();
+            // Sample Credit Card payment
+            CreditCardPayment cardPay = new CreditCardPayment(
+                2500.75,
+                DateTime.Now,
+                "1234567812345678",
+                "Alice Johnson"
+            );
 
-            Console.WriteLine();
+            // Sample UPI payment
+            UpiPayment upiPay = new UpiPayment(
+                999.50,
+                DateTime.Now,
+                "alice@upi",
+                "State Bank of India"
+            );
 
-            // Create an E-Book
-            EBook ebook1 = new EBook("C# Programming Guide", "John Doe", 5.8, "PDF");
-            Console.WriteLine("=== E-Book ===");
-            ebook1.DisplayInfo();
+            // Process both payments
+            cardPay.ProcessPayment();
+            upiPay.ProcessPayment();
         }
     }
 }
