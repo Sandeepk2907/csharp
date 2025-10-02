@@ -1,122 +1,62 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace BankDemo
+class Student
 {
-    // ================= Base Class =================
-    class BankAccount
+    public int Id;
+    public string Name;
+    public int Marks;
+    public override string ToString() => $"ID:{Id}, Name:{Name}, Marks:{Marks}";
+}
+
+class Program
+{
+    static void Main()
     {
-        // 1. Public – accessible everywhere
-        public string AccountHolder;
+        List<Student> students = new List<Student>();
+        int choice;
 
-        // 2. Private – accessible only inside BankAccount
-        private double Balance;
-
-        // 3. Protected – accessible in BankAccount and derived classes
-        protected string BankName;
-
-        // 4. Internal – accessible anywhere in the same assembly
-        internal string IFSCCode;
-
-        // 5. Protected Internal – accessible in same assembly
-        //     OR derived classes in other assemblies
-        protected internal string Branch;
-
-        // 6. Private Protected – accessible in derived classes
-        //     but ONLY in the same assembly
-        private protected string AccountType;
-
-        // Constructor
-        public BankAccount(string holder, double balance, string bank,
-                           string ifsc, string branch, string type)
+        do
         {
-            AccountHolder = holder;
-            Balance = balance;
-            BankName = bank;
-            IFSCCode = ifsc;
-            Branch = branch;
-            AccountType = type;
-        }
+            Console.WriteLine("\n1.Add  2.Display  3.Search  4.Remove  5.Topper  6.Exit");
+            Console.Write("Enter choice: ");
+            choice = int.Parse(Console.ReadLine());
 
-        // Public method to show details inside the class
-        public void ShowBankAccountDetails()
-        {
-            Console.WriteLine("=== Inside BankAccount Class ===");
-            Console.WriteLine($"Public           : Account Holder = {AccountHolder}");
-            Console.WriteLine($"Private          : Balance = {Balance}");
-            Console.WriteLine($"Protected        : Bank Name = {BankName}");
-            Console.WriteLine($"Internal         : IFSC Code = {IFSCCode}");
-            Console.WriteLine($"ProtectedInternal: Branch = {Branch}");
-            Console.WriteLine($"PrivateProtected : Account Type = {AccountType}");
-            Console.WriteLine();
-        }
-    }
+            switch (choice)
+            {
+                case 1:
+                    Console.Write("ID: "); int id = int.Parse(Console.ReadLine());
+                    Console.Write("Name: "); string name = Console.ReadLine();
+                    Console.Write("Marks: "); int marks = int.Parse(Console.ReadLine());
+                    students.Add(new Student { Id = id, Name = name, Marks = marks });
+                    break;
 
-    // ============= Derived Class =============
-    class SavingsAccount : BankAccount
-    {
-        public SavingsAccount(string holder, double balance, string bank,
-                              string ifsc, string branch, string type)
-            : base(holder, balance, bank, ifsc, branch, type)
-        { }
+                case 2:
+                    students.ForEach(s => Console.WriteLine(s));
+                    break;
 
-        public void ShowAccessibleMembers()
-        {
-            Console.WriteLine("=== Inside SavingsAccount (Derived Class) ===");
-            Console.WriteLine($"Public           : {AccountHolder}");
-            // Console.WriteLine(Balance); // ❌ Not accessible (private)
-            Console.WriteLine($"Protected        : {BankName}");         // ✅
-            Console.WriteLine($"Internal         : {IFSCCode}");         // ✅ (same assembly)
-            Console.WriteLine($"ProtectedInternal: {Branch}");           // ✅
-            Console.WriteLine($"PrivateProtected : {AccountType}");      // ✅ (derived + same assembly)
-            Console.WriteLine();
-        }
-    }
+                case 3:
+                    Console.Write("Search ID: ");
+                    int sid = int.Parse(Console.ReadLine());
+                    var s1 = students.FirstOrDefault(s => s.Id == sid);
+                    Console.WriteLine(s1 != null ? s1 : "Not found");
+                    break;
 
-    // ============= Non-Derived Class in Same Assembly =============
-    class OtherClass
-    {
-        public void ShowAccessibleMembers(BankAccount acc)
-        {
-            Console.WriteLine("=== Inside OtherClass (Non-Derived, Same Assembly) ===");
-            Console.WriteLine($"Public           : {acc.AccountHolder}");
-            // Console.WriteLine(acc.Balance);      // ❌ Private
-            // Console.WriteLine(acc.BankName);     // ❌ Protected
-            Console.WriteLine($"Internal         : {acc.IFSCCode}");      // ✅ Same assembly
-            Console.WriteLine($"ProtectedInternal: {acc.Branch}");        // ✅ Same assembly
-            // Console.WriteLine(acc.AccountType);  // ❌ Private Protected
-            Console.WriteLine();
-        }
-    }
+                case 4:
+                    Console.Write("Remove ID: ");
+                    int rid = int.Parse(Console.ReadLine());
+                    students.RemoveAll(s => s.Id == rid);
+                    Console.WriteLine("Removed (if existed).");
+                    break;
 
-    // ================= Main Program =================
-    class Program
-    {
-        static void Main()
-        {
-            BankAccount baseAcc = new BankAccount(
-                holder: "Alice",
-                balance: 50000,
-                bank: "National Bank",
-                ifsc: "NATB0001234",
-                branch: "City Center",
-                type: "Savings"
-            );
-
-            SavingsAccount savings = new SavingsAccount(
-                holder: "Bob",
-                balance: 25000,
-                bank: "National Bank",
-                ifsc: "NATB0005678",
-                branch: "Uptown",
-                type: "Savings"
-            );
-
-            OtherClass other = new OtherClass();
-
-            // Show details inside each context
-            baseAcc.ShowBankAccountDetails();   // Inside base class
-            savings.ShowAccessibleMembers();    // Inside derived class
-            other.ShowAccessibleMembers(baseAcc); // Inside non-derived same-assembly class
-        }
+                case 5:
+                    if (students.Count > 0)
+                        Console.WriteLine("Topper: " + students.OrderByDescending(s => s.Marks).First());
+                    else
+                        Console.WriteLine("No students.");
+                    break;
+            }
+        } while (choice != 6);
     }
 }
